@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/ExpressJS.iml" filepath="$PROJECT_DIR$/.idea/ExpressJS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../test_expressjs/.idea/test_expressjs.iml" filepath="$PROJECT_DIR$/../test_expressjs/.idea/test_expressjs.iml" />
+    </modules>
+  </component>
+</project>
