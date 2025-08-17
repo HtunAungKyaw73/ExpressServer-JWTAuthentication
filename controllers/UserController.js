@@ -48,7 +48,7 @@ const login = async function(req,res,next)
     }
     catch (err) {
         console.log(err)
-        res.status(401).send({message:"Invalid user"});
+        res.status(401).json({message:"Invalid user"});
     }
 }
 const getUserById = async function (req, res, next) {
