@@ -1,3 +1,4 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -5,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const mongoose = require('mongoose');
-const { db } = require('./config/database');
+// const { db } = require('./config/database');
 
 const customLogger = require('./middlewares/customLogger');
 
@@ -19,7 +20,7 @@ let auth = require('./middlewares/auth');
 var app = express();
 
 // mongodb connect
-mongoose.connect(db).then(() => console.log('MongoDB connected!'))
+mongoose.connect(process.env.DB_HOST).then(() => console.log('MongoDB connected!'))
     .catch(err => console.log(err));
 
 // view engine setup
@@ -32,6 +33,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// const port = process.env.PORT || 3080;
+// app.listen(port, () => console.info(`Server is running in port ${port}`));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

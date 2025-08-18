@@ -1,5 +1,6 @@
 let userService = require('../services/UserService');
-const {config} = require('../config/Config');
+// const {config} = require('../config/Config');
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const errorHandler = require('../middlewares/httpErrorHandler');
 
@@ -12,7 +13,7 @@ const registerUser = async function( req,res,next)
     {
         let user = await userService.register(userName,password,email);
         let payload = { id: user._id };
-        const token = jwt.sign(payload, config.TOKEN_SECRET, {expiresIn: '30s'});
+        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '30s'});
         res.status(200).json({
             message: 'New user has been registered',
             userId: user._id,
@@ -39,7 +40,7 @@ const login = async function(req,res,next)
         let user = await userService.login(userName,password);
         // console.log("User",user);
         let payload = { id: user._id };
-        const token = jwt.sign(payload, config.TOKEN_SECRET, {expiresIn: '30s'});
+        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '30s'});
         res.status(200).json({
             message: 'Login successful!',
             userId: user._id,

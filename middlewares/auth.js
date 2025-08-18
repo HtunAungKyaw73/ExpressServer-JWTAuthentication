@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-
-const { config } = require('./../config/Config');
+require('dotenv').config();
+// const { config } = require('./../config/Config');
 
 const verifyUserToken = (req, res, next) => {
     let token = req.headers.authorization;
@@ -11,7 +11,7 @@ const verifyUserToken = (req, res, next) => {
         token = token.split(' ')[1] // Remove Bearer from string
         if (token === 'null' || !token) return res.status(401).send('Unauthorized request');
 
-        let verifiedUser = jwt.verify(token, config.TOKEN_SECRET);   // verify ရင် payload ပြန်ရမယ်
+        let verifiedUser = jwt.verify(token, process.env.TOKEN_SECRET);   // verify ရင် payload ပြန်ရမယ်
         if (!verifiedUser) return res.status(401).send('Unauthorized request')
         console.log("Verified User",verifiedUser);
 
