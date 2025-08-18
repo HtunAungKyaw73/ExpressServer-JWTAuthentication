@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const verifyUserToken = (req, res, next) => {
     let token = req.headers.authorization;
-    console.log('Token ',token);
+    // console.log('Token ',token);
     if (!token) return res.status(401).send("Access Denied / Unauthorized request");
 
     try {
@@ -19,7 +19,7 @@ const verifyUserToken = (req, res, next) => {
         next();
     }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         if (error.name === 'TokenExpiredError') {
             return res.status(401).send('Token has expired');
         }

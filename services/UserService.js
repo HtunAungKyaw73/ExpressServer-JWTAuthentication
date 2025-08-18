@@ -1,19 +1,21 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/Users');
 
-const register = async (userName,password, email)=>{
+const register = async (userName,password, email, role)=>{
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
     let user = new User({
         username: userName,
         email: email,
         password: hashPassword,
+        role: role,
     });
-    return user.save();
+    return await user.save();
 }
-const login = async (userName,password)=>{
+const login = async (userName,password, email)=>{
     const filter = {
-        username: userName
+        username: userName,
+        email: email,
     };
     console.log('Filter ',filter);
     const user = await User.findOne(filter);

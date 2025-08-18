@@ -17,6 +17,15 @@ const UserSchema = new Schema({
         required: true,
         trim: true,
         unique: true
+    },
+    role: {
+        type: 'String',
+        required: true,
+        trim: true,
+        enum: {
+            values: ['admin', 'user'],
+            message: '{VALUE} is not a valid role'
+        }
     }
 });
 module.exports = mongoose.model('User', UserSchema)
