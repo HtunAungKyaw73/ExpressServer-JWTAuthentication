@@ -3,6 +3,13 @@ const errorHandler = require("../middlewares/httpErrorHandler");
 
 async function getAllTodosHandler(req, res, next) {
     const todos = await todoService.getAllTodos();
+
+    // session based data return
+    if(req.session.user){
+        return res.status(200).send(req.session.todos);
+    }
+
+    // all data from server
     res.status(200).json({
         status: "success",
         data: todos,
@@ -22,6 +29,14 @@ async function saveTodoHandler(req, res, next){
     const body = req.body;
     const todo = await todoService.saveTodo(body);
     console.log("Todo added successfully:", todo);
+
+    // for session based data store
+    const {todos} = req.session;
+    if(todos)
+        todos.push(todo);
+    else
+        req.session.todos = [todo];
+
     res.status(201).json({
         status: "success",
         data: todo

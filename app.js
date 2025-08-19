@@ -4,7 +4,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const cors = require('cors');
+const session = require('express-session');
 const mongoose = require('mongoose');
 // const { db } = require('./config/database');
 
@@ -31,15 +32,24 @@ app.use(logger('dev'));
 app.use(customLogger("MyLogger"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+
 app.use(cookieParser());
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    saveUninitialized: false,
+    resave: false,
+    cookie: { maxAge: 60000 * 5 }
+}))
 app.use(express.static(path.join(__dirname, 'public')));
 
 // const port = process.env.PORT || 3080;
 // app.listen(port, () => console.info(`Server is running in port ${port}`));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/api/todos', todosRouter);
+app.use('/todos', todosRouter);
+// app.use('/api/todos', todosRouter);
 // app.use('/api/movies', moviesRouter);
 // app.use('/api/reviews', reviewsRouter);
 app.use('/api/movies', auth.verifyUserToken, moviesRouter);
