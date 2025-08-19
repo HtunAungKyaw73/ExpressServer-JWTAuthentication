@@ -1,9 +1,27 @@
 const movieService = require('../services/movieService');
 const errorHandler = require('../middlewares/httpErrorHandler');
+const {validationResult, matchedData} = require("express-validator");
 
 const getAllMoviesHandler = async function(req, res, next){
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.status(400).json({
+            status: 'error',
+            error: result.array()
+        });
+    }
+    // const { filter, value } = req.query;
+    const { filter, value } = matchedData(req); // best practice more safe
     const movies = await movieService.getAllMovies();
-    res.status(200).json({
+
+    if (filter && value && value.length > 0) {
+        return res.status(200).json({
+            status: 'success',
+            data: movies.filter(movie => movie[filter].includes(value))
+        })
+    }
+
+    return res.status(200).json({
         status: 'success',
         data: movies,
     })

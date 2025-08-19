@@ -14,7 +14,7 @@ const registerUser = async function( req,res,next)
     {
         let user = await userService.register(userName,password,email,role);
         let payload = { id: user._id };
-        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '30s'});
+        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: process.env.JWT_EXPIRES});
         res.status(200).json({
             message: 'New user has been registered',
             userId: user._id,
@@ -23,13 +23,18 @@ const registerUser = async function( req,res,next)
     }
     catch (err) {
         console.log("Register Error",err.message);
-        if (err.message.split(" ")[0] === 'E11000') {
-            res.status(400).json({
+        if (err.message.split(" ")[0] === 'E11000' && err.toString().includes('username')) {
+            return res.status(400).json({
                 message: 'Username already taken. Please user another username.'
             });
         }
+        else if (err.message.split(" ")[0] === 'E11000' &&  err.toString().includes('email')) {
+            return res.status(400).json({
+                message: 'There is already a user with this email.'
+            });
+        }
         else{
-            res.status(400).json({message: err.message});
+            return res.status(400).json({message: err.message});
         }
     }
 }
@@ -43,7 +48,7 @@ const login = async function(req,res,next)
         let user = await userService.login(userName,password, email);
         // console.log("User",user);
         let payload = { id: user._id };
-        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '30s'});
+        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: process.env.JWT_EXPIRES});
         res.status(200).json({
             message: 'Login successful!',
             userId: user._id,
