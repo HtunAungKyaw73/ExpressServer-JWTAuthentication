@@ -7,6 +7,7 @@ var logger = require('morgan');
 const cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 // const { db } = require('./config/database');
 
 const customLogger = require('./middlewares/customLogger');
@@ -40,7 +41,10 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
     resave: false,
-    cookie: { maxAge: 60000 * 5 }
+    cookie: { maxAge: 60000 * 5 },
+    store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+    })
 }))
 app.use(express.static(path.join(__dirname, 'public')));
 

@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
 
     console.log(req.session);
     console.log(req.session.id);
-    req.session.visited = true; // to get unique session id after init visit; this is when the session is stored
+    //req.session.visited = true; // to get unique session id after init visit; this is when the session is stored
 
     res.status(200).json({
         sessionId: req.session.id
