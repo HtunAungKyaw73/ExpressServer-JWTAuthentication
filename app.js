@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 // const { db } = require('./config/database');
 
-const customLogger = require('./middlewares/customLogger');
+const {customLogger} = require('./middlewares/customLogger');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -57,8 +57,8 @@ app.use('/todos', todosRouter);
 // app.use('/api/todos', todosRouter);
 // app.use('/api/movies', moviesRouter);
 // app.use('/api/reviews', reviewsRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/refresh', refreshTokenRouter);
+app.use('/api/auth/users', usersRouter);
+app.use('/api/auth/refresh', refreshTokenRouter);
 app.use('/api/movies', auth.verifyUserToken, moviesRouter);
 app.use('/api/reviews', auth.verifyUserToken, reviewsRouter);
 
