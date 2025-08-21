@@ -27,6 +27,9 @@ const UserSchema = new Schema({
             values: ['admin', 'user'],
             message: '{VALUE} is not a valid role'
         }
+    },
+    refreshToken: {
+        type: 'String',
     }
 });
 module.exports = mongoose.model('User', UserSchema)

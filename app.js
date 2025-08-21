@@ -17,6 +17,7 @@ var usersRouter = require('./routes/users');
 let todosRouter = require('./routes/todos');
 let moviesRouter = require('./routes/movies');
 let reviewsRouter = require('./routes/reviews');
+let refreshTokenRouter = require('./routes/refresh');
 let auth = require('./middlewares/auth');
 
 var app = express();
@@ -56,9 +57,10 @@ app.use('/todos', todosRouter);
 // app.use('/api/todos', todosRouter);
 // app.use('/api/movies', moviesRouter);
 // app.use('/api/reviews', reviewsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/refresh', refreshTokenRouter);
 app.use('/api/movies', auth.verifyUserToken, moviesRouter);
 app.use('/api/reviews', auth.verifyUserToken, reviewsRouter);
-app.use('/api/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

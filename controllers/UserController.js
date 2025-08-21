@@ -3,63 +3,70 @@ let userService = require('../services/UserService');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const errorHandler = require('../middlewares/httpErrorHandler');
+const Users = require("../models/Users");
 
-const registerUser = async function( req,res,next)
+const registerUserHandler = async function( req,res,next)
 {
     let userName = req.body['username'];
     let password = req.body['password'];
     let email = req.body['email'];
     let role = req.body['role'];
-    try
-    {
-        let user = await userService.register(userName,password,email,role);
-        let payload = { id: user._id };
-        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: process.env.JWT_EXPIRES});
-        res.status(200).json({
-            message: 'New user has been registered',
-            userId: user._id,
-            token: token
-        });
-    }
-    catch (err) {
-        console.log("Register Error",err.message);
-        if (err.message.split(" ")[0] === 'E11000' && err.toString().includes('username')) {
-            return res.status(400).json({
-                message: 'Username already taken. Please user another username.'
-            });
-        }
-        else if (err.message.split(" ")[0] === 'E11000' &&  err.toString().includes('email')) {
-            return res.status(400).json({
-                message: 'There is already a user with this email.'
-            });
-        }
-        else{
-            return res.status(400).json({message: err.message});
-        }
-    }
+    let user = await userService.register(userName,password,email,role);
+    // let payload = { id: user._id };
+    // const accessToken = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: process.env.JWT_EXPIRES});
+    res.status(200).json({
+        message: 'New user has been registered',
+        userId: user._id,
+        // accessToken: accessToken
+    });
 }
-const login = async function(req,res,next)
+
+const loginHandler = async function(req,res,next)
 {
     let userName = req.body['username'];
     let password = req.body['password'];
     let email = req.body['email'];
-    try
-    {
-        let user = await userService.login(userName,password, email);
-        // console.log("User",user);
-        let payload = { id: user._id };
-        const token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: process.env.JWT_EXPIRES});
-        res.status(200).json({
-            message: 'Login successful!',
-            userId: user._id,
-            token: token
-        });
-    }
-    catch (err) {
-        console.log(err)
-        res.status(401).json({message:"Invalid user"});
-    }
+
+    let user = await userService.login(userName,password, email);
+    // console.log("User",user);
+    let payload = { id: user._id };
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.JWT_EXPIRES});
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '1d'});
+
+    user.refreshToken = refreshToken; // attach RT to user
+    const result = await user.save(); // save user to DB
+    console.log("RT attached to User: ",result);
+    res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // sent RT as a cookie
+
+    res.status(200).json({
+        message: 'Login successful!',
+        accessToken: accessToken
+    });
 }
+
+const logoutHandler = async function(req,res,next){
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.sendStatus(403);
+    const refreshToken = cookies.jwt;
+    console.log('cookies', cookies);
+
+    const user = await Users.findOne({refreshToken});
+    console.log('user',user);
+    if (!user){
+        res.clearCookie('jwt',{httpOnly: true, secure: true});
+        return res.sendStatus(404);
+    }
+    user.refreshToken = '';
+    const result = await user.save();
+    console.log('Saved User',result);
+
+    res.clearCookie('jwt',{httpOnly: true, secure: true});
+    res.status(200).json({
+        status: 'success',
+        message: 'Logout successful!'
+    })
+}
+
 const getUserById = async function (req, res, next) {
     console.log('Req ',req.params);
     let userId = req.params.userId;
@@ -102,6 +109,9 @@ const getAllUsersHandler = async function(req, res, next) {
     })
 }
 
+const registerUser = async (req, res, next) => await errorHandler.httpErrorHandler(registerUserHandler,500)(req, res, next);
+const logout = async (req, res, next) => await errorHandler.httpErrorHandler(logoutHandler,500)(req, res, next);
+const login = async (req, res, next) => await errorHandler.httpErrorHandler(loginHandler,401)(req, res, next);
 const getAllUsers = async (req, res, next) => await errorHandler.httpErrorHandler(getAllUsersHandler, 500)(req, res, next);
 const updateUser = async (req, res, next) => await errorHandler.httpErrorHandler(updateUserHandler, 404)(req, res, next);
 const deleteUser = async (req, res, next) => await errorHandler.httpErrorHandler(deleteUserHandler, 404)(req, res, next);
@@ -111,6 +121,7 @@ module.exports = {
     getUserById,
     registerUser,
     login,
+    logout,
     updateUser,
     deleteUser,
 }

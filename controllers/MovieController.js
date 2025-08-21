@@ -3,6 +3,32 @@ const errorHandler = require('../middlewares/httpErrorHandler');
 const {validationResult, matchedData} = require("express-validator");
 
 const getAllMoviesHandler = async function(req, res, next){
+    const movies = await movieService.getAllMovies();
+    console.log('Query', req.query);
+    if(!!Object.keys(req.query).length)
+    {
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({
+                status: 'error',
+                error: result.array()
+            });
+        }
+        const { filter, value } = matchedData(req); // best practice more safe
+        if (filter && value && value.length > 0) {
+            return res.status(200).json({
+                status: 'success',
+                data: movies.filter(movie => movie[filter].includes(value))
+            })
+        }
+    }
+    return res.status(200).json({
+        status: 'successful',
+        data: movies,
+    })
+}
+
+const getFilteredMoviesHandler = async function(req, res, next){
     const result = validationResult(req);
     if (!result.isEmpty()) {
         return res.status(400).json({
@@ -10,7 +36,6 @@ const getAllMoviesHandler = async function(req, res, next){
             error: result.array()
         });
     }
-    // const { filter, value } = req.query;
     const { filter, value } = matchedData(req); // best practice more safe
     const movies = await movieService.getAllMovies();
 
@@ -20,11 +45,6 @@ const getAllMoviesHandler = async function(req, res, next){
             data: movies.filter(movie => movie[filter].includes(value))
         })
     }
-
-    return res.status(200).json({
-        status: 'success',
-        data: movies,
-    })
 }
 
 const getMovieByIdHandler = async (req, res, next) => {
@@ -76,6 +96,7 @@ const findMoviesByYearHandler = async (req, res, next) => {
 }
 
 const getAllMovies = async (req, res, next) => await errorHandler.httpErrorHandler(getAllMoviesHandler, 404)(req, res, next);
+const getFilteredMovies = async (req, res, next) => await errorHandler.httpErrorHandler(getFilteredMoviesHandler, 404)(req, res, next);
 const getMovieById = async (req, res, next) => await errorHandler.httpErrorHandler(getMovieByIdHandler, 404)(req, res, next);
 const saveMovie = async (req, res, next) => await errorHandler.httpErrorHandler(saveMovieHandler, 500)(req, res, next);
 const updateMovie = async (req, res, next) => await errorHandler.httpErrorHandler(updateMovieHandler, 500)(req, res, next);
@@ -85,6 +106,7 @@ const findMoviesByYear = async (req, res, next) => await errorHandler.httpErrorH
 
 module.exports = {
     getAllMovies,
+    getFilteredMovies,
     getMovieById,
     saveMovie,
     updateMovie,
