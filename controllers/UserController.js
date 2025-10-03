@@ -36,7 +36,7 @@ const loginHandler = async function(req,res,next)
     user.refreshToken = refreshToken; // attach RT to user
     const result = await user.save(); // save user to DB
     console.log("RT attached to User: ",result);
-    res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // sent RT as a cookie
+    res.cookie('jwt', refreshToken, { httpOnly: true, SameSite: 'None', Secure: true, maxAge: 24 * 60 * 60 * 1000 }); // sent RT as a cookie
 
     res.status(200).json({
         message: 'Login successful!',
@@ -53,14 +53,14 @@ const logoutHandler = async function(req,res,next){
     const user = await Users.findOne({refreshToken});
     console.log('user',user);
     if (!user){
-        res.clearCookie('jwt',{httpOnly: true, secure: true});
+        res.clearCookie('jwt',{httpOnly: true, SameSite: 'None', Secure: true});
         return res.sendStatus(404);
     }
     user.refreshToken = '';
     const result = await user.save();
     console.log('Saved User',result);
 
-    res.clearCookie('jwt',{httpOnly: true, secure: true});
+    res.clearCookie('jwt',{httpOnly: true, SameSite: 'None', Secure: true});
     res.status(200).json({
         status: 'success',
         message: 'Logout successful!'

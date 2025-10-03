@@ -1,0 +1,11 @@
+20250822	19:39:45	da5da0b8-beed-42d3-a9d3-404291a98252	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	POST	/login/	undefined
+20250822	19:39:46	f630e156-877a-466b-8072-3eae19a295f2	Too Many Requests: Too many login attempts from this IP, please try again after a 60 second pause	POST	/login/	undefined
+20250822	19:51:28	1269d0d0-317e-4551-87ea-1c5110b442b0	Invalid user or password	POST	/login/	undefined
+20250822	19:54:32	b609966d-ad3f-4aec-a064-640ddd1167b0	Cast to ObjectId failed for value "68a2cecfcc37f7e24807f26" (type string) at path "_id" for model "User"	DELETE	/68a2cecfcc37f7e24807f26	undefined
+20250822	19:55:13	9b77007e-889d-4874-94d2-2f191412d642	E11000 duplicate key error collection: express_test.users index: username_1 dup key: { username: "htunaung" }	POST	/register	undefined
+20250822	21:49:41	bd501956-af6d-44f0-a515-675403c97505	E11000 duplicate key error collection: express_test.users index: username_1 dup key: { username: "htunaung" }	POST	/register	undefined
+20250822	21:49:45	94cde0de-bdf2-484a-9b45-0d95f9d8d0bd	option sameSite is invalid	POST	/login/	undefined
+20250822	21:56:33	bec001e0-6113-4a8f-bb0c-ddbb3962d6ba	option sameSite is invalid	POST	/login/	undefined
+20250822	21:59:20	f6e7af75-deff-4314-a826-b6b06f322f9b	option sameSite is invalid	POST	/login/	undefined
+20250822	22:01:05	996b80e4-149e-4e9d-9fa8-7511557c6284	E11000 duplicate key error collection: express_test.users index: email_1 dup key: { email: "htunaung7321@gmail.com" }	POST	/register	undefined
+20250822	22:01:28	2a30aac2-327d-446c-8b4e-577fefc98af6	option sameSite is invalid	POST	/login/	undefined

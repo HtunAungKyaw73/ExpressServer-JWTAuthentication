@@ -4,6 +4,7 @@ var router = express.Router();
 const todos = require('../controllers/TodoController');
 const sessionHandler = require("../middlewares/sessionHandler");
 
+// router.get('/', todos.getAllTodos);
 router.get('/', sessionHandler, todos.getAllTodos);
 router.get('/:id', todos.getTodoById);
 router.post('/', todos.saveTodo);

@@ -8,6 +8,8 @@ const cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
+const credentials = require('./middlewares/credentials');
+const corsOptions = require('./middlewares/corsOptions');
 // const { db } = require('./config/database');
 
 const {customLogger} = require('./middlewares/customLogger');
@@ -34,7 +36,8 @@ app.use(logger('dev'));
 app.use(customLogger("MyLogger"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
+app.use(credentials);
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
@@ -54,7 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/todos', todosRouter);
-// app.use('/api/todos', todosRouter);
+app.use('/api/todos', todosRouter);
 // app.use('/api/movies', moviesRouter);
 // app.use('/api/reviews', reviewsRouter);
 app.use('/api/auth/users', usersRouter);
